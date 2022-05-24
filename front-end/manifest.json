@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "final_project_3",
+  "description": "boostcamp final project-NFT",
+  "version": "1.0",
+  "browser_action": {
+      "default_popup": "index.html",
+      "default_icon": {
+        "16":"images/KakaoTalk_20220421_162037925.png",
+        "32":"images/KakaoTalk_20220429_172522593.png"
+      }
+  },
+
+  "permissions": [
+      "activeTab",
+      "",
+      "tabs"
+  ]
+}
