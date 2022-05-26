@@ -21,15 +21,14 @@ with open('./userid.json') as json_file:
 
 with open('./itemid.json') as json_file:
     itemid = json.load(json_file)
-    itemid = {str(v): k for k, v in itemid.items()}
+    itemid = {v: k for k, v in itemid.items()}
 
 
 # In[3]:
 
 
 preprocessed_data['userid'] = [userid[preprocessed_data['purchasing_user_profile_id'][i]] for i in range(preprocessed_data.shape[0])]
-preprocessed_data['itemid'] = [str([preprocessed_data['nifty_obj_contract_address'][i], preprocessed_data['nifty_obj_token_id'][i]]) for i in range(preprocessed_data.shape[0])]
-preprocessed_data['itemid'] = [itemid[x] for x in preprocessed_data['itemid']]
+preprocessed_data['itemid'] = [itemid[preprocessed_data['img_url'][i]] for i in range(preprocessed_data.shape[0])]
 
 
 # In[4]:
@@ -44,7 +43,7 @@ with open('./itemid_imageurl.json', 'w') as outfile:
     json.dump(itemid_imageurl, outfile, indent = 4) 
 
 
-# In[ ]:
+# In[5]:
 
 
 interaction_userid = pd.DataFrame(
@@ -60,7 +59,7 @@ with open('./interaction_userid.json') as json_file:
 preprocessed_data['userid'] = list(map(int, [interaction_userid[x] for x in preprocessed_data['userid']]))
 
 
-# In[ ]:
+# In[6]:
 
 
 interaction_itemid = pd.DataFrame(
@@ -76,7 +75,7 @@ with open('./interaction_itemid.json') as json_file:
 preprocessed_data['itemid'] = list(map(int, [interaction_itemid[x] for x in preprocessed_data['itemid']]))
 
 
-# In[ ]:
+# In[7]:
 
 
 interaction = np.zeros((len(preprocessed_data['userid'].unique()),len(preprocessed_data['itemid'].unique())))
@@ -85,7 +84,7 @@ for i in tqdm(range(preprocessed_data.shape[0])):
 interaction = pd.DataFrame(interaction)
 
 
-# In[ ]:
+# In[8]:
 
 
 interaction.to_csv("./interaction.csv", index=False)
