@@ -1,43 +1,44 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import numpy as np
 import pandas as pd
+from datetime import datetime
 import json 
 
 import matplotlib.pyplot as plt
 from matplotlib_venn import venn2
 
 
-# In[ ]:
+# In[2]:
 
 
 raw_data = pd.read_csv("./raw_data.csv", index_col=0)
 
 
-# In[ ]:
+# In[3]:
 
 
 raw_data.head()
 
 
-# In[ ]:
+# In[4]:
 
 
 raw_data.info()
 
 
-# In[ ]:
+# In[5]:
 
 
 # 사는 사람보다 판 사람이 더 많다
 raw_data[['purchasing_user_profile_id', 'selling_user_profile_id']].nunique()
 
 
-# In[ ]:
+# In[6]:
 
 
 # 팔기만 하는 사람도 존재하고, 사기만 하는 사람도 존재한다
@@ -52,7 +53,7 @@ venn2(subsets=(len(purchased.difference(sell)), len(sell.difference(purchased)),
 plt.show()
 
 
-# In[ ]:
+# In[7]:
 
 
 # 데이터 전처리
@@ -65,10 +66,11 @@ new_data['nifty_obj_img_url'] = [x if x.startswith('http') else np.nan for x in 
 new_data = new_data.dropna(subset=['nifty_obj_img_url'], axis=0)
 new_data['img_url'] = [x.split('/')[-1] for x in new_data['nifty_obj_img_url']]
 new_data['extension'] = [x.split('.')[-1] if len(x.split('.')[-1]) < 10 else np.nan for x in new_data['img_url']]
+new_data['nifty_obj_timestamp'] = [datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%fZ') for x in new_data['nifty_obj_timestamp']]
 new_data.reset_index(drop=True, inplace=True)
 
 
-# In[ ]:
+# In[8]:
 
 
 userid = list(purchased.union(sell))
@@ -81,7 +83,7 @@ with open('./userid.json', 'w') as outfile:
     json.dump(userid_dict, outfile, indent = 4) 
 
 
-# In[ ]:
+# In[9]:
 
 
 itemid_df = pd.DataFrame(
@@ -93,7 +95,7 @@ with open('./itemid.json', 'w') as outfile:
     json.dump(itemid_dict, outfile, indent = 4)
 
 
-# In[ ]:
+# In[10]:
 
 
 # 데이터 export
