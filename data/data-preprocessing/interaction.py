@@ -7,14 +7,13 @@
 import numpy as np
 import pandas as pd
 import json 
-from tqdm import tqdm
 
+
+# ## 데이터 import (preprocessed_data.csv, userid.json, itmeid.json)
 
 # In[2]:
 
 
-# 데이터 import
-preprocessed_data = pd.read_csv('./preprocessed_data.csv')
 with open('./userid.json') as json_file:
     userid = json.load(json_file)
     userid = {v: k for k, v in userid.items()}
@@ -27,65 +26,97 @@ with open('./itemid.json') as json_file:
 # In[3]:
 
 
-preprocessed_data['userid'] = [userid[preprocessed_data['purchasing_user_profile_id'][i]] for i in range(preprocessed_data.shape[0])]
-preprocessed_data['itemid'] = [itemid[preprocessed_data['img_url'][i]] for i in range(preprocessed_data.shape[0])]
+preprocessed_data = pd.read_csv('./preprocessed_data.csv')
 
 
 # In[4]:
 
 
-itemid_imageurl = preprocessed_data[['itemid', 'nifty_obj_img_url']]
-itemid_imageurl.drop_duplicates(inplace=True)
-itemid_imageurl.set_index('itemid', inplace=True)
-itemid_imageurl = itemid_imageurl.to_dict()['nifty_obj_img_url']
-# print(interaction_userid)
-with open('./itemid_imageurl.json', 'w') as outfile:
-    json.dump(itemid_imageurl, outfile, indent = 4) 
+preprocessed_data['userid'] = [int(userid[idx]) for idx in preprocessed_data['purchasing_user_profile_id']]
+preprocessed_data['itemid'] = [int(itemid[idx]) for idx in preprocessed_data['img_url']]
 
 
 # In[5]:
 
 
-interaction_userid = pd.DataFrame(
-    {'userid': sorted(preprocessed_data['userid'].unique())}
-)
-interaction_userid = interaction_userid.to_dict()['userid']
-# print(interaction_userid)
-with open('./interaction_userid.json', 'w') as outfile:
-    json.dump(interaction_userid, outfile, indent = 4) 
-with open('./interaction_userid.json') as json_file:
-    interaction_userid = json.load(json_file)
-    interaction_userid = {v: k for k, v in interaction_userid.items()}
-preprocessed_data['userid'] = list(map(int, [interaction_userid[x] for x in preprocessed_data['userid']]))
+preprocessed_data.info()
 
 
-# In[6]:
+# ## Interaction data 생성
+
+# In[12]:
 
 
-interaction_itemid = pd.DataFrame(
-    {'itemid': sorted(preprocessed_data['itemid'].unique())}
-)
-interaction_itemid = interaction_itemid.to_dict()['itemid']
-# print(interaction_itemid)
-with open('./interaction_itemid.json', 'w') as outfile:
-    json.dump(interaction_itemid, outfile, indent = 4) 
-with open('./interaction_itemid.json') as json_file:
-    interaction_itemid = json.load(json_file)
-    interaction_itemid = {v: k for k, v in interaction_itemid.items()}
-preprocessed_data['itemid'] = list(map(int, [interaction_itemid[x] for x in preprocessed_data['itemid']]))
+MIN_INTERACTION = 30
+
+agg_on_user = preprocessed_data.groupby("userid").agg({
+    "itemid": "nunique"
+})
+
+active_user = agg_on_user[agg_on_user.itemid >= MIN_INTERACTION].index.values
+active_df = preprocessed_data[preprocessed_data.userid.isin(active_user)]
 
 
-# In[7]:
+# In[13]:
 
 
-interaction = np.zeros((len(preprocessed_data['userid'].unique()),len(preprocessed_data['itemid'].unique())))
-for i in tqdm(range(preprocessed_data.shape[0])):
-    interaction[preprocessed_data['userid'][i]][preprocessed_data['itemid'][i]] = 1
-interaction = pd.DataFrame(interaction)
+interaction = pd.pivot_table(active_df, 
+                             index=["userid"], 
+                             columns=["itemid"], 
+                             values=["img_url"], 
+                             aggfunc=["nunique"],
+                             fill_value=0)
+interaction.columns = np.arange(active_df.itemid.nunique())
+interaction.reset_index(inplace=True, drop=True)
+interaction
 
 
-# In[8]:
+# In[14]:
 
 
-interaction.to_csv("./interaction.csv", index=False)
+sparsity = (interaction.to_numpy() == 0).mean()
+sparsity, int(sparsity * 10000)
+
+
+# In[15]:
+
+
+interaction.to_csv(f"./interaction_min{MIN_INTERACTION}_sparse{int(sparsity * 10000)}.csv", 
+                   index=False)
+
+
+# ## Intraction과 관련된 json file들 저장
+
+# In[10]:
+
+
+def save_interaction_ids(df, id_name):
+    interaction_id_dic = pd.DataFrame(
+        {id_name: sorted(df[id_name].unique())}
+    ).to_dict()[id_name]
+    
+    save_json(f"interaction_{id_name}", interaction_id_dic)
+
+def save_json(fname, dic_data):
+    with open(f"./{fname}_min{MIN_INTERACTION}.json", "w") as outfile:
+        json.dump(dic_data, outfile, indent=4)
+
+
+# In[16]:
+
+
+itemid_imageurl = active_df[['itemid', 'nifty_obj_img_url']]
+itemid_imageurl = itemid_imageurl.drop_duplicates(subset=["itemid"])
+itemid_imageurl.set_index('itemid', inplace=True)
+itemid_imageurl = itemid_imageurl.to_dict()['nifty_obj_img_url']
+
+save_json("interaction_itemid_imageurl", itemid_imageurl)
+save_interaction_ids(active_df, "userid")
+save_interaction_ids(active_df, "itemid")
+
+
+# In[ ]:
+
+
+
 
