@@ -13,7 +13,7 @@ import json
 
 # ## 데이터 import (preprocessed_data.csv, userid.json, itmeid.json)
 
-# In[7]:
+# In[2]:
 
 
 itemid_json = pd.read_json("/opt/ml/final-project-level3-recsys-01/data/data-preprocessing/itemid.json", orient='records')
@@ -22,20 +22,20 @@ itemid = itemid_json.set_index('itemid').to_dict()['index']
 userid = userid_json.set_index('user_profile_id').to_dict()['index']
 
 
-# In[8]:
+# In[3]:
 
 
 preprocessed_data = pd.read_csv('./preprocessed_data.csv')
 
 
-# In[9]:
+# In[4]:
 
 
 preprocessed_data['userid'] = [int(userid[idx]) for idx in preprocessed_data['purchasing_user_profile_id']]
 preprocessed_data['itemid'] = [int(itemid[idx]) for idx in preprocessed_data['img_url']]
 
 
-# In[10]:
+# In[5]:
 
 
 MIN_TRANSACTION = 30
@@ -58,7 +58,7 @@ active_df.reset_index(drop=True, inplace=True)
 active_df.to_csv(f"transaction_data_min{MIN_TRANSACTION}.csv", index=False)
 
 
-# In[11]:
+# In[6]:
 
 
 label = []
@@ -97,7 +97,7 @@ print('전체 데이터의 item 개수: ', len(set(active_df.itemid)), '개')
 print('train에 존재하지 않는 test의 item 개수: ', len(set(train.itemid)), '중의', len(set(test.itemid).difference(set(train.itemid))), '개')
 
 
-# In[12]:
+# In[7]:
 
 
 def save_transaction_ids(df, id_name):
@@ -115,10 +115,10 @@ def save_json(fname, dic_data):
         json.dump(parsed, outfile, indent=4)
 
 
-# In[13]:
+# In[8]:
 
 
-itemid_imageurl = active_df[['itemid', 'nifty_obj_img_url']]
+itemid_imageurl = active_df[['itemid', 'img_url']]
 itemid_imageurl = itemid_imageurl.drop_duplicates(subset=["itemid"])
 itemid_imageurl = itemid_imageurl.to_json(orient="records")
 
