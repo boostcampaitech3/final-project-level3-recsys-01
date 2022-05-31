@@ -4,7 +4,7 @@
     - requirements.txt
     - raw_data.csv
     - data-preprocessing.ipynb
-    - interaction.ipynb
+    - splitted_data.ipynb: 실제로 학습에 사용할 데이터와 train/test 데이터 저장하는 코드
     - run.sh
 
 ## 돌려야 하는 코드
