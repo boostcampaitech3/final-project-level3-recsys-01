@@ -73,31 +73,62 @@ new_data.reset_index(drop=True, inplace=True)
 # In[8]:
 
 
-userid = list(purchased.union(sell))
-userid_df = pd.DataFrame(
-    {'userid': userid}
-)
-userid_dict = userid_df.to_dict()['userid']
-# print(userid_dict)
-with open('./userid.json', 'w') as outfile:
-    json.dump(userid_dict, outfile, indent = 4) 
+new_data.columns
 
 
 # In[9]:
 
 
-itemid_df = pd.DataFrame(
-    {'itemid': list(new_data['img_url'].unique())}
-)
-itemid_dict = itemid_df.to_dict()['itemid']
-# print(itemid_dict)
-with open('./itemid.json', 'w') as outfile:
-    json.dump(itemid_dict, outfile, indent = 4)
+user_colnames = ['user_profile_id', 'user_profile_profile_url', 'user_profile_name']
+df1 = new_data[['purchasing_user_profile_id', 'purchasing_user_profile_profile_url', 'purchasing_user_profile_name']]
+df2 = new_data[['selling_user_profile_id', 'selling_user_profile_profile_url', 'selling_user_profile_name']]
+df1.columns = df2.columns = user_colnames
+user_info = df1.append(df2)
+user_info = user_info.drop_duplicates('user_profile_id')
+user_info.reset_index(drop=True, inplace=True)
 
 
 # In[10]:
 
 
+userid_df = pd.DataFrame(
+    {
+        'user_profile_id': user_info.user_profile_id,
+        'user_profile_profile_url': user_info.user_profile_profile_url,
+        'user_profile_name': user_info.user_profile_name
+    }
+)
+userid_df = userid_df.rename_axis('index').reset_index()
+userid_df_dic = userid_df.to_json(orient="records")
+
+with open(f"./userid.json", "w") as outfile:
+    parsed = json.loads(userid_df_dic)
+    json.dump(parsed, outfile, indent=4)
+
+
+# In[11]:
+
+
+itemid_df = pd.DataFrame(
+    {'itemid': list(new_data['img_url'].unique())}
+)
+itemid_df = itemid_df.rename_axis('index').reset_index()
+itemid_df_dic = itemid_df.to_json(orient="records")
+
+with open(f"./itemid.json", "w") as outfile:
+    parsed = json.loads(itemid_df_dic)
+    json.dump(parsed, outfile, indent=4)
+
+
+# In[12]:
+
+
 # 데이터 export
 new_data.to_csv('./preprocessed_data.csv', index=False)
+
+
+# In[ ]:
+
+
+
 
