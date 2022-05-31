@@ -13,41 +13,38 @@ import json
 
 # ## 데이터 import (preprocessed_data.csv, userid.json, itmeid.json)
 
-# In[2]:
+# In[7]:
 
 
-with open('./userid.json') as json_file:
-    userid = json.load(json_file)
-    userid = {v: k for k, v in userid.items()}
-
-with open('./itemid.json') as json_file:
-    itemid = json.load(json_file)
-    itemid = {v: k for k, v in itemid.items()}
+itemid_json = pd.read_json("/opt/ml/final-project-level3-recsys-01/data/data-preprocessing/itemid.json", orient='records')
+userid_json = pd.read_json("/opt/ml/final-project-level3-recsys-01/data/data-preprocessing/userid.json", orient='records')
+itemid = itemid_json.set_index('itemid').to_dict()['index']
+userid = userid_json.set_index('user_profile_id').to_dict()['index']
 
 
-# In[3]:
+# In[8]:
 
 
 preprocessed_data = pd.read_csv('./preprocessed_data.csv')
 
 
-# In[4]:
+# In[9]:
 
 
 preprocessed_data['userid'] = [int(userid[idx]) for idx in preprocessed_data['purchasing_user_profile_id']]
 preprocessed_data['itemid'] = [int(itemid[idx]) for idx in preprocessed_data['img_url']]
 
 
-# In[5]:
+# In[10]:
 
 
-MIN_transaction = 30
+MIN_TRANSACTION = 30
 
 agg_on_user = preprocessed_data.groupby("userid").agg({
     "itemid": "nunique"
 })
 
-active_user = agg_on_user[agg_on_user.itemid >= MIN_transaction].index.values
+active_user = agg_on_user[agg_on_user.itemid >= MIN_TRANSACTION].index.values
 active_df = preprocessed_data[preprocessed_data.userid.isin(active_user)]
 
 # userid itemid 기준으로 unique한 item만 남김
@@ -58,10 +55,10 @@ active_df = active_df.sort_values(['userid', 'nifty_obj_timestamp'])
 active_df.reset_index(drop=True, inplace=True)
 
 # 실제 모델에 사용할 학습 데이터
-active_df.to_csv("transaction_data.csv", index=False)
+active_df.to_csv(f"transaction_data_min{MIN_TRANSACTION}.csv", index=False)
 
 
-# In[6]:
+# In[11]:
 
 
 label = []
@@ -85,22 +82,22 @@ test = active_df[active_df['label'] == 'test']
 
 train = active_df[active_df['label'] == 'train']
 train.reset_index(drop=True, inplace=True)
-train.to_csv(f"./train{RECALL_K}_min{MIN_transaction}.csv", index=False)
+train.to_csv(f"./train{RECALL_K}_min{MIN_TRANSACTION}.csv", index=False)
 
 test = active_df[active_df['label'] == 'test']
 test.reset_index(drop=True, inplace=True)
-test.to_csv(f"./test{RECALL_K}_min{MIN_transaction}.csv", index=False)
+test.to_csv(f"./test{RECALL_K}_min{MIN_TRANSACTION}.csv", index=False)
 assert active_df.purchasing_user_profile_id.nunique()*RECALL_K == test.shape[0]
 
 test_answer = test.sort_values(['userid', 'itemid'])[['userid', 'itemid']]
-test_answer.to_csv(f"./test{RECALL_K}_answer_min{MIN_transaction}.csv", index=False)
+test_answer.to_csv(f"./test{RECALL_K}_answer_min{MIN_TRANSACTION}.csv", index=False)
 
 assert len(train.userid.unique()) == len(test.userid.unique())
 print('전체 데이터의 item 개수: ', len(set(active_df.itemid)), '개')
 print('train에 존재하지 않는 test의 item 개수: ', len(set(train.itemid)), '중의', len(set(test.itemid).difference(set(train.itemid))), '개')
 
 
-# In[7]:
+# In[12]:
 
 
 def save_transaction_ids(df, id_name):
@@ -113,12 +110,12 @@ def save_transaction_ids(df, id_name):
 
 def save_json(fname, dic_data):
 
-    with open(f"./{fname}_min{MIN_transaction}.json", "w") as outfile:
+    with open(f"./{fname}_min{MIN_TRANSACTION}.json", "w") as outfile:
         parsed = json.loads(dic_data)
         json.dump(parsed, outfile, indent=4)
 
 
-# In[8]:
+# In[13]:
 
 
 itemid_imageurl = active_df[['itemid', 'nifty_obj_img_url']]
