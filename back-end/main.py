@@ -1,11 +1,40 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = ["*"]
+
+origins = [
+    "http://localhost",
+    "http://localhost:30001",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:30001',
+]
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 
 app = FastAPI()
 host = "0.0.0.0"
 port = 30001
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=['*']
+# )
+    
+
 
 sample_nft = ['https://media.niftygateway.com/image/upload/v1629990317/ADaniel/Jose%20Delbo/BurnDrop/Captain_Apemo_szmxar.jpg',
        'https://media.niftygateway.com/image/upload/v1642000404/Max/OscarLlorens/Oscar_LLorens_Soul_oygs0o.jpg',
@@ -29,5 +58,10 @@ def get_user(user_id: str, request: Request):
             "recommendation": sample_nft
             }
 
+
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host=host, port=port)
+
+
