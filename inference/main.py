@@ -23,7 +23,7 @@ def main(args):
     except:
         print("There is no certain USER_URL")
         print("Try again")
-        return
+        return None
 
     # dataset
     if args.model == "FM":
@@ -35,34 +35,28 @@ def main(args):
         modelFM = FMModel(model_dir=args.model_dir, ratings_coo=ratings_coo, k=K)
         idxFM = modelFM.predict(INFERENCE_USERID=INFERENCE_USERID)
 
-    INFERENCE_USERID = dataset.userid_dict[INFERENCE_USERID]
-    inference = Inference(inference_num=K)
-    result = inference.proceed_inference(idx=idxFM, itemid_json=dataset.itemid_json, itemid_imageurl_dict=dataset.itemid_imageurl_dict, transaction_data=dataset.transaction_data)
-    output = {'user_id': INFERENCE_USER_URL, 'recommendation': result}
+    file_exists = os.path.exists(os.path.join(args.output_dir, f"output_{INFERENCE_USER_URL}.json"))
 
-    with open(os.path.join(args.output_dir, f"output_{INFERENCE_USER_URL}.json"), "w") as outfile:
-        json.dump(output, outfile)
-    print(f"Recommended items for {INFERENCE_USER_URL} saved as output_{INFERENCE_USER_URL}.json")
-    print("Inference for", INFERENCE_USER_URL, "terminated")
+    if not file_exists:
+        try:
+            INFERENCE_USERID = dataset.userid_dict[INFERENCE_USERID]
+            inference = Inference(inference_num=K)
+            result = inference.proceed_inference(idx=idxFM, itemid_json=dataset.itemid_json, itemid_imageurl_dict=dataset.itemid_imageurl_dict, transaction_data=dataset.transaction_data)
+            output = {'user_id': INFERENCE_USER_URL, 'recommendation': result}
 
-    # file_exists = os.path.exists(os.path.join(args.output_dir, f"output_{INFERENCE_USER_URL}.json"))
+            with open(os.path.join(args.output_dir, f"output_{INFERENCE_USER_URL}.json"), "w") as outfile:
+                json.dump(output, outfile)
+            print(f"Recommended items for {INFERENCE_USER_URL} saved as output_{INFERENCE_USER_URL}.json")
+            print("Inference for", INFERENCE_USER_URL, "terminated")
 
-    # if not file_exists:
-    #     try:
-    #         INFERENCE_USERID = dataset.userid_dict[INFERENCE_USERID]
-    #         inference = Inference(inference_num=K)
-    #         result = inference.proceed_inference(idx=idxFM, itemid_json=dataset.itemid_json, itemid_imageurl_dict=dataset.itemid_imageurl_dict, transaction_data=dataset.transaction_data)
-    #         output = {'user_id': INFERENCE_USER_URL, 'recommendation': result}
+            return output
 
-    #         with open(os.path.join(args.output_dir, f"output_{INFERENCE_USER_URL}.json"), "w") as outfile:
-    #             json.dump(output, outfile)
-    #         print(f"Recommended items for {INFERENCE_USER_URL} saved as output_{INFERENCE_USER_URL}.json")
-    #         print("Inference for", INFERENCE_USER_URL, "terminated")
-
-    #     except:
-    #         print(f"Not enough transaction data to infer for '{INFERENCE_USER_URL}'...")
-    # else:
-    #     print(f"Recommended items for {INFERENCE_USER_URL} already saved as output_{INFERENCE_USER_URL}.json")
+        except:
+            print(f"Not enough transaction data to infer for '{INFERENCE_USER_URL}'...")
+            return None
+    else:
+        print(f"Recommended items for {INFERENCE_USER_URL} already saved as output_{INFERENCE_USER_URL}.json")
+        return None
     
 if __name__ == "__main__":
 
