@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 origins = ["*"]
 
@@ -57,6 +58,10 @@ def get_user(user_id: str, request: Request):
             "ip address": request.client.host,
             "recommendation": sample_nft
             }
+
+# @app.post("{/items/}")
+# def create_item(item: Item):
+#     return item
 
 
 
