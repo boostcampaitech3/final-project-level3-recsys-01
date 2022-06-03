@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from main import get_inference_results
+from inference import get_inference_results
 
 
 app = FastAPI()
