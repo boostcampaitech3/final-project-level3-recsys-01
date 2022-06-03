@@ -1,4 +1,4 @@
 # Model
-- MF @sophi1127: 
+- FM @sophi1127: 
 - VAE @donghyyun: 
 
