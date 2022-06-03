@@ -2,3 +2,9 @@
 */awkward.csv
 */interaction.ipynb
 */temp.ipynb
+
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+__pycache__
+*.pyc
