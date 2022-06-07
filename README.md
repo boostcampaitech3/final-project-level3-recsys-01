@@ -9,6 +9,8 @@
 | :-------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------: |
 | ![그림1](https://user-images.githubusercontent.com/61958748/172278471-584ffaf5-ea6d-4e63-ae77-7cac4dbae899.png)|![그림5](https://user-images.githubusercontent.com/61958748/172278489-00773bd6-080f-41ec-b828-24f4dabc5f98.png)| <img width="140" alt="그림3" src="https://user-images.githubusercontent.com/61958748/172278478-f3bbd8ce-3616-4c37-8fa6-4247e20b469e.png">|  ![그림2](https://user-images.githubusercontent.com/61958748/172278474-f2d54e27-898b-4142-af78-b0e370e43ffc.png)| ![그림4](https://user-images.githubusercontent.com/61958748/172278482-a591c2e4-f4b7-4edf-a390-9e875c2c4226.png)|
 
+</br>
+
 ## ✨Contribution
 
 - [`김동현`](https://github.com/donghyyun) &nbsp; RecVAE model • Backend
@@ -21,6 +23,7 @@
 
 - [`진상우`](https://github.com/Jin-s-work) &nbsp; Frontend • Backend
 
+</br>
 
 # 선택지를 반으로 줄이고 싶은 당신을 위해, Nft For Thanos
 
@@ -39,12 +42,15 @@
 - Why Chrome Extension?
 
     - Nifty Gateway 홈페이지에서 구매와 추천을 한번에!
- </br>
+
+</br>
 
 ## 2️⃣ Demo Video
 <p align="center">
   <img src="https://user-images.githubusercontent.com/81813324/172316569-86add576-a125-4476-85b2-0b82bea0c4dc.gif" width="500">
 </p>
+
+</br>
 
 ## 3️⃣ Service Architecture
 
@@ -61,6 +67,8 @@
 - Back End
     - Fast API & MySQL
     - 서버는 Google Cloud Platform 활용
+
+</br>
 
 ## 4️⃣ Work Flow
 
@@ -95,6 +103,8 @@
 하나의 item에 여러 개의 에디션을 보유하는 경우가 존재
 
 ⇒ 모든 에디션을 한눈에 비교할 수 있는 marketplace url 제공
+
+</br>
 
 ## 5️⃣ Future Works
 
