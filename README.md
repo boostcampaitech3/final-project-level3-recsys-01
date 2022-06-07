@@ -39,9 +39,12 @@
 - Why Chrome Extension?
 
     - Nifty Gateway 홈페이지에서 구매와 추천을 한번에!
+ </br>
 
 ## 2️⃣ Demo Video
-![ezgif com-gif-maker](https://user-images.githubusercontent.com/81813324/172316569-86add576-a125-4476-85b2-0b82bea0c4dc.gif)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/81813324/172316569-86add576-a125-4476-85b2-0b82bea0c4dc.gif" width="500">
+</p>
 
 ## 3️⃣ Service Architecture
 
@@ -74,10 +77,10 @@
 ### 2. 데이터 전처리
 
 - string 타입의 feature들에 대해서 공백을 제거하고, image url이 잘못된 데이터를 제거하는 등 작업
-- .Unique한 user와 item을 뽑아냄
+- 고유한 user와 item을 뽑아냄
     - user: 크롤링한 데이터에서 고유한 식별번호가 존재
     - item: 식별번호가 따로 존재하지 않아,  image url 기준으로 직접 고유 id를 생성
-- data sparsity를 줄이기 위해 최소 30건 이상의 거래가 이루어진 user들과 해당 user들이 구매한 모든 item들을 활용
+- 데이터의 sparsity를 줄이기 위해 최소 30건 이상의 거래가 이루어진 user들과 해당 user들이 구매한 모든 item들을 활용
 - 모델 학습을 위해 현재 수집된 raw data를 interaction matrix로 변환
 
 ### 3. 모델 학습
@@ -95,6 +98,6 @@
 
 ## 5️⃣ Future Works
 
-- 이미지 유사성 활용한 content-based filtering model 추가 ⇒ 더 다양한 아이템 추천
+- 이미지 유사성 활용한 Content-based Filtering model 추가 ⇒ 더 다양한 아이템 추천
 - 클릭 기반 아이템 추천 추가⇒더 많은 사용자들에게 서비스 제공 가능
 - Load Balancing을 통해 분산처리 구축 ⇒ 대규모 트래픽 대응 가능
