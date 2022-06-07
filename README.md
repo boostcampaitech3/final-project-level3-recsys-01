@@ -41,6 +41,7 @@
     - Nifty Gateway 홈페이지에서 구매와 추천을 한번에!
 
 ## 2️⃣ Demo Video
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/81813324/172316569-86add576-a125-4476-85b2-0b82bea0c4dc.gif)
 
 ## 3️⃣ Service Architecture
 
