@@ -11,15 +11,15 @@
 
 ## ✨Contribution
 
--[`김동현`](https://github.com/donghyyun) &nbsp; RecVAE model • Backend
+- [`김동현`](https://github.com/donghyyun) &nbsp; RecVAE model • Backend
 
--[`심재정`](https://github.com/Jaejeong98) &nbsp; Frontend
+- [`심재정`](https://github.com/Jaejeong98) &nbsp; Frontend
 
--[`이수연`](https://github.com/coding-groot) &nbsp; Web crawling • GCP connection
+- [`이수연`](https://github.com/coding-groot) &nbsp; Web crawling • GCP connection
 
--[`임지원`](https://github.com/sophi1127) &nbsp; Data preprocessing • lightFM model
+- [`임지원`](https://github.com/sophi1127) &nbsp; Data preprocessing • lightFM model
 
--[`진상우`](https://github.com/Jin-s-work) &nbsp; Frontend • Backend
+- [`진상우`](https://github.com/Jin-s-work) &nbsp; Frontend • Backend
 
 
 # 선택지를 반으로 줄이고 싶은 당신을 위해, Nft For Thanos
