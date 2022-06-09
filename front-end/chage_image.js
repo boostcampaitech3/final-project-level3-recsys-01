@@ -1,9 +1,3 @@
-
-// const image1=document.getElementById('image1');
-// var imageUrl = localStorage.getItem("rec_key");
-// var arr=JSON.parse(imageUrl);
-// image1.style.backgroundImage= "url('" + arr[0] + "')"
-
 var imageUrl = localStorage.getItem("rec_key");
 var image_link=localStorage.getItem("rec_value");
 var arr=JSON.parse(imageUrl);
@@ -27,9 +21,3 @@ for(i=1; i<=10; i++){
     document.getElementById('image'+i+'_link').setAttribute('href',arr_link[i-1].url[0]);
     document.getElementById("likes"+i).innerHTML="❤ "+arr_link[i-1].likes;
 }
-
-// for(i=1; i<=10; i++){
-//     const image1=document.getElementById('image'+i);
-//     image1.style.backgroundImage= "url('" + arr[i-1] + "')";
-//     document.getElementById('image'+i+'_link').setAttribute('href',arr_link[i-1].url[0]);
-// }
