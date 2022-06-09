@@ -1,80 +1,88 @@
+import numpy as np
 import pandas as pd
+from google.cloud.sql.connector import Connector
+import sqlalchemy
+from sqlalchemy import MetaData, Table, select
+
+from config import *
 
 
-class TransactionData:
-    def __init__(self, transaction_data_path="./data/transaction_data_min30.csv"):
-        self.transaction_df = pd.read_csv(transaction_data_path)
-        self.interaction_data = None
-    
-    def get_transaction_data(self):
-        return self.transaction_df
-    
-    def get_interaction_data(self):
-        self.interaction_data = pd.pivot_table(self.transaction_df,
-                                              index=["userid"],
-                                              columns=["itemid"],
-                                              values=["img_url"],
-                                              aggfunc=["nunique"],
-                                              fill_value=0)
-        self.interaction_data.columns = sorted(self.transaction_df.itemid.unique())
-        self.interaction_data = self.interaction_data.reset_index(drop=True)
-        
-        return self.interaction_data.to_numpy()
-    
+__all__ = ['db', 'interaction_data']
+
+
+def getconn():
+    conn = Connector().connect(
+        MYSQL_CONNECTION_NAME,
+        "pymysql",
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        db=MYSQL_DB_NAME
+    )
+    return conn
+
 
 class DB:
-    def __init__(self, path):
-        self.db = pd.read_csv(path)
+    engine = sqlalchemy.create_engine(
+            "mysql+pymysql://",
+            creator=getconn,
+        )
+    metadata = MetaData()
     
-    def query(self, return_column, cond_column, cond_value):
-        result = self.db[self.db[cond_column] == cond_value][return_column]
-        if result.shape[0] == 0:
-            print(f"No rows for: {cond_column} == {cond_value}")
+    def __init__(self):
+        self.user_table = Table("users", self.metadata, autoload_with=self.engine)
+        self.item_table = Table("items", self.metadata, autoload_with=self.engine)
+        self.top10_items = Table("top10_items", self.metadata, autoload_with=self.engine)
+    
+    def _select_from_users(self, cond_column, cond_value):
+        with self.engine.connect() as conn:
+            stmt = select(self.user_table).where(self.user_table.c[cond_column] == cond_value)
+            return conn.execute(stmt)
+    
+    def _select_from_items(self, cond_column, cond_value):
+        with self.engine.connect() as conn:
+            stmt = select(self.item_table).where(self.item_table.c[cond_column] == cond_value)
+            return conn.execute(stmt)
+    
+    def find_user_by_id(self, user_id, columns):
+        result = self._select_from_users("user_profile_profile_url", user_id).first()
+        if result is None:
             return -1
-        if result.shape[0] > 1:
-            return result.values
-        
-        return result.values[0]
+        if len(columns) == 1:
+            return result[columns[0]]
+        return [result[col] for col in columns]
     
+    def find_item_by_index(self, item_id, columns):
+        result = self._select_from_items("item_index", item_id).first()
+        if len(columns) == 1:
+            return result[columns[0]]
+        return [result[col] for col in columns]
     
-class UserDB(DB):
-    INDEX = "index"
-    ID = "user_profile_id"
-    URL = "user_profile_profile_url"
-    NAME = "user_profile_name"
+    def find_top10_item_index(self):
+        with self.engine.connect() as conn:
+            result = conn.execute(select(self.top10_items)).all()
+            return [row["item_index"] for row in result]
     
-    def __init__(self, user_data_path="./data/user_db.csv"):
-        super().__init__(user_data_path)
-    
-    def url_by_index(self, idx):
-        return self.query(self.URL, self.INDEX, idx)
-    
-    def name_by_index(self, idx):
-        return self.query(self.NAME, self.INDEX, idx)
-    
-    def id_by_url(self, url):
-        return self.query(self.ID, self.URL, url)
-    
-    def index_by_url(self, url):
-        return self.query(self.INDEX, self.URL, url)
+    def get_interaction_data(self):
+        with self.engine.connect() as conn:
+            df = pd.read_sql_table("interactions", conn)
+            df["inter"] = 1
+            
+            interaction = pd.pivot_table(df,
+                                         index=["user_id"],
+                                         columns=["item_id"],
+                                         values=["inter"],
+                                         fill_value=0)
+            interaction.columns = np.arange(df.item_id.nunique())
+            return interaction.reset_index(drop=True).to_numpy()
 
 
-class ItemDB(DB):
-    INDEX = "index"
-    ID = "itemid"
-    IMG_URL = "img_url"
-    
-    def __init__(self, item_data_path="./data/item_db.csv"):
-        super().__init__(item_data_path)
-        
-    def id_by_index(self, idx):
-        return self.query(self.ID, self.INDEX, idx)
-    
-    def img_url_by_index(self, idx):
-        return self.query(self.IMG_URL, self.INDEX, idx)
+db = DB()
+interaction_data = db.get_interaction_data()
 
 
-user_db = UserDB()
-item_db = ItemDB()
-transaction_data = TransactionData().get_transaction_data()
-interaction_data = TransactionData().get_interaction_data()
+if __name__ == '__main__':
+    name, num_editions, num_likes = db.find_item_by_index(0, ["name", "num_editions", "num_likes"])
+    print(name, num_editions, num_likes)
+    print(db.find_user_by_id("hugom", ["user_id"]))
+    print(interaction_data.shape)
+    print(db.find_top10_item_index())
