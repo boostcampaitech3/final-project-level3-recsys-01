@@ -1,14 +1,22 @@
 {
   "manifest_version": 2,
-  "name": "final_project_3",
+  "name": "NFT_For_Thanos",
   "description": "boostcamp final project-NFT",
   "version": "1.0",
   "browser_action": {
-      "default_popup": "index.html",
-      "default_icon": {
-        "16":"images/KakaoTalk_20220421_162037925.png",
-        "32":"images/KakaoTalk_20220429_172522593.png"
-      }
+    "default_popup": "index.html",
+    "default_icon": {
+      "16":"images/그림2.png",
+      "32":"images/NFT_FOR_THANOS_chrom_X1.6.png",
+      "48":"images/NFT_FOR_THANOS_chrom_X1.6.png",
+      "128":"images/NFT_FOR_THANOS_chrom_X1.6.png"
+    }
+  },
+  "icons": {
+    "16":"images/NFT_FOR_THANOS_chrom_X1.6.png",
+    "32":"images/NFT_FOR_THANOS_chrom_X1.6.png",
+    "48":"images/NFT_FOR_THANOS_chrom_X1.6.png",
+    "128":"images/NFT_FOR_THANOS_chrom_X1.6.png"
   },
 
   "permissions": [
