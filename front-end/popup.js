@@ -22,20 +22,3 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(url);
   });
 });
-
-window.onload=function(event){
-  document.getElementById('ids').textContent = localStorage.getItem("ID");
-  if(localStorage.length==0){
-    function loadPopup(event){
-      if(document.getElementById("popup-overlay").classList.contains("popup-hide")){
-        document.getElementById("popup-overlay").classList.remove("popup-hide");
-       }else{
-        document.getElementById("popup-overlay").classList.add("popup-show");
-      }
-    }
-    setTimeout(loadPopup, 3000);
-  }else{
-    id=localStorage.getItem("ID");
-    document.getElementById('title').textContent='환영합니다\n'+id+'님!';
-  }
-};

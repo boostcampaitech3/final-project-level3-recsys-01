@@ -26,25 +26,18 @@ ph_email.addEventListener('click', (e)=>{
     e.target.parentElement.children[0].focus();
 });
 
-function getJsonFile(id){
-    // var url="http://115.85.181.5:30001/"+id;
-    var url="http://118.67.128.97:30001/"+id;
-    fetch(url)
-        .then((response) => {
-        return response.json();
-        })
-        .then((json) => {
-            console.log(json);
-            keys=Object.keys(json.recommendation);
-            console.log(Object.keys(json.recommendation));
-            localStorage.setItem("rec_key",JSON.stringify(Object.keys(json.recommendation)));
-            values=Object.values(json.recommendation);
-            console.log(Object.values(json.recommendation));
-            localStorage.setItem("rec_value",JSON.stringify(Object.values(json.recommendation)));
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+const fetchUser=(id)=>{
+    let url="http://118.67.128.97:30001/"+id;
+    return fetch(url).then(res=>res.json());
+}
+const Asynchronous=async()=>{
+    let user=await fetchUser(id);
+    keys=Object.keys(user.recommendation);
+    localStorage.setItem("rec_key",JSON.stringify(Object.keys(user.recommendation)));
+    values=Object.values(user.recommendation);
+    localStorage.setItem("rec_value",JSON.stringify(Object.values(user.recommendation)));
+    localStorage.setItem("over30",user.over30);
+    window.location.reload();
 }
 
 loginBtn.addEventListener('click', (e)=>{
@@ -54,10 +47,8 @@ loginBtn.addEventListener('click', (e)=>{
     e.preventDefault();
     localStorage.setItem("Full-ID",emInput.value);
     id=emInput.value.split("@")[0];
-    console.log(id);
     localStorage.setItem("ID",id);
     load();
-    setTimeout(() => window.location.reload(), 300);
 });
 
 showidtxt.addEventListener('click', (e)=>{
@@ -66,9 +57,7 @@ showidtxt.addEventListener('click', (e)=>{
     else{
         document.getElementById("change_id").classList.toggle("show");
         document.getElementById('ids').textContent ='현재 ID: '+localStorage.getItem("Full-ID");
-        console.log(1);
     }
-    console.log(localStorage.getItem("Full-ID"));
 });
 
 changeidBtn.addEventListener('click', (e)=>{
@@ -79,16 +68,17 @@ changeidBtn.addEventListener('click', (e)=>{
     }
     document.getElementById("change_id").classList.toggle("show");
     document.getElementById('input').value=localStorage.getItem("Full-ID");
-
-    console.log(2);
 });
 
 saveIDBtn.addEventListener('click', (e)=>{
     e.preventDefault();
     localStorage.clear();
-    localStorage.setItem("Full-ID",document.getElementById('input').value);
-    localStorage.setItem("ID",document.getElementById('input').value.split("@")[0]);
-    console.log(3);
+    full_id=document.getElementById('input').value;
+    id=full_id.split("@")[0];
+    localStorage.setItem("Full-ID",full_id);
+    localStorage.setItem("ID",id);
+    load();
+    
     if(document.getElementById("change_id").classList.contains("hide")){
         document.getElementById("change_id").classList.toggle("show");
     }else{
@@ -96,14 +86,11 @@ saveIDBtn.addEventListener('click', (e)=>{
     }
     document.getElementById("change_id_input").classList.toggle("show");
     document.getElementById('ids').textContent ='현재 ID: '+localStorage.getItem("Full-ID");
-    load();
-    setTimeout(() => window.location.reload(), 300);
 });
 
 cancelIDBtn.addEventListener('click', (e)=>{
     document.getElementById("change_id_input").classList.toggle("show");
 });
-
 
 function load(event){
     document.getElementById('ids').textContent = localStorage.getItem("ID");
@@ -118,7 +105,23 @@ function load(event){
       setTimeout(loadPopup, 3000);
     }else{
       id=localStorage.getItem("ID");
-      document.getElementById('title').textContent='환영합니다\n'+id+'님!';
-    getJsonFile(id);
+    Asynchronous();
+    document.getElementById('title').innerHTML='환영합니다<br>'+id+'님!';
+  }
+};
+
+window.onload=function(event){
+    document.getElementById('ids').textContent = localStorage.getItem("ID");
+    if(localStorage.length==0){
+      function loadPopup(event){
+        if(document.getElementById("popup-overlay").classList.contains("popup-hide")){
+          document.getElementById("popup-overlay").classList.remove("popup-hide");
+         }else{
+          document.getElementById("popup-overlay").classList.add("popup-show");
+        }
+      }
+      setTimeout(loadPopup, 3000);
+    }else{
+      id=localStorage.getItem("ID");
     }
   };
