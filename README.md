@@ -2,7 +2,7 @@
 
 ## ‘골라조’를 소개합니다.
 
-## 👨‍👩‍👧Members
+## 👨‍👩‍👧 Members
 
 
 |[김동현](https://github.com/donghyyun)|[심재정](https://github.com/Jaejeong98)|[이수연](https://github.com/coding-groot)|[임지원](https://github.com/sophi1127)|[진상우](https://github.com/Jin-s-work)|
